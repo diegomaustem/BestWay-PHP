@@ -1,8 +1,8 @@
 <?php 
 namespace App\Routes;
 use App\Controllers\RotaFacilController;
-
-class Route {
+class Route 
+{
     public static function direcionaRota() 
     {
         $metodo = $_SERVER['REQUEST_METHOD'];
@@ -15,15 +15,15 @@ class Route {
         }
 
         $enderecosOD = json_decode(file_get_contents('php://input'));
-        $enderecosValidos = self::validaEnderecosEntrada($enderecosOD);
+        $enderecosODValidos = self::validaEnderecosEntrada($enderecosOD);
 
-        if($enderecosValidos !== true) {
+        if($enderecosODValidos !== true) {
             self::exibeErros(["error" => "Estrutura de endereços inválida!"], 422);
         }
         new RotaFacilController($enderecosOD);
     }
 
-    private static function validaEnderecosEntrada($enderecosOD)
+    private static function validaEnderecosEntrada(object $enderecosOD): bool | null
     {
         if ($enderecosOD === null || !isset($enderecosOD->origem, $enderecosOD->destino)) {
             return null;
@@ -41,7 +41,7 @@ class Route {
         return true;
     }
 
-    private static function exibeErros($erro, $codigoHttp) 
+    private static function exibeErros($erro, $codigoHttp): string
     {
         http_response_code($codigoHttp);
         header('Content-Type: application/json; charset=utf-8');
