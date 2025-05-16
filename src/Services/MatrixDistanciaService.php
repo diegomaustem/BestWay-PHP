@@ -41,7 +41,7 @@ class MatrixDistanciaService
             ExibeErros::erro('Falha no processo de calcular distância. Tente mais tarde!', 500);
         }
     }
-    
+
     private function formatStringOD(object $coordenadas): string 
     {
         return $coordenadas->latitude . ',' . $coordenadas->longitude;

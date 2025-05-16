@@ -95,7 +95,7 @@ class RotaFacilController
         ];
     }
 
-    private function formataPercurso(array $percurs): object 
+    private function formataPercurso(array $percurso): object 
     {
         $elemento = $percurso['rows'][0]['elements'][0] ?? null;
     
