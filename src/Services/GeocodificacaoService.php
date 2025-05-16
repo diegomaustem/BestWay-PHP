@@ -6,7 +6,7 @@ use GuzzleHttp\Promise;
 use App\Utils\ExibeErros;
 use Throwable;
 
-define("URL_GEOCODE", "https://api.distancematrix.ai/maps/api/geocode/jon");
+define("URL_GEOCODE", "https://api.distancematrix.ai/maps/api/geocode/json");
 
 class GeocodificacaoService 
 {
