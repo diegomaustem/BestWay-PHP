@@ -1,7 +1,9 @@
 <?php 
 namespace App\Services;
 
+use App\Utils\ExibeErros;
 use GuzzleHttp\Client;
+use Throwable;
 
 define("URL_MATRIX", "https://api.distancematrix.ai/maps/api/distancematrix/json");
 
@@ -9,7 +11,8 @@ class MatrixDistanciaService
 {
     private object $coordenadasOD;
 
-    public function __construct(object $coordenadasOD) {
+    public function __construct(object $coordenadasOD) 
+    {
         $this->coordenadasOD = $coordenadasOD;
     }
 
@@ -29,31 +32,18 @@ class MatrixDistanciaService
                     return json_decode($response->getBody(), true);
                 },
                 function ($exception) {
-                    self::exibeErros(["error" => 'Falha de requisição. Tente mais tarde!'], 404);
+                    ExibeErros::erro('Falha de requisição. Tente mais tarde!', 404);
                 }
             );
-            
             return $promise->wait(); 
-        } catch (\Exception $e) {
-            error_log("Erro de matrix distancia: " . $e->getMessage());
-            self::exibeErros(["error" => 'Falha no processo de calcular distância. Tente mais tarde!'], 500);
+        } catch (Throwable $th) {
+            error_log("Log error:" . $th->getMessage());
+            ExibeErros::erro('Falha no processo de calcular distância. Tente mais tarde!', 500);
         }
     }
-
+    
     private function formatStringOD(object $coordenadas): string 
     {
         return $coordenadas->latitude . ',' . $coordenadas->longitude;
-    }
-
-    private static function exibeErros($erro, $codigoHttp): string
-    {
-        http_response_code($codigoHttp);
-        header('Content-Type: application/json; charset=utf-8');
-    
-        $resposta = [
-            'error' => $erro ? $erro['error'] : 'Erro desconhecido',
-            'code' => $codigoHttp
-        ];
-        exit(json_encode($resposta, JSON_UNESCAPED_UNICODE));
     }
 }
