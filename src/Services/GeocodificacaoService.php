@@ -3,8 +3,10 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
+use App\Utils\ExibeErros;
+use Throwable;
 
-define("URL_GEOCODE", "https://api.distancematrix.ai/maps/api/geocode/json");
+define("URL_GEOCODE", "https://api.distancematrix.ai/maps/api/geocode/jon");
 
 class GeocodificacaoService 
 {
@@ -43,25 +45,13 @@ class GeocodificacaoService
                 if ($result['state'] === 'fulfilled') {
                     $geodata[$tipo] = json_decode($result['value']->getBody());
                 } else {
-                    self::exibeErros(["error" => 'Falha no processo de geocodificação. Tente mais tarde!'], 500);
+                    ExibeErros::erro('Falha no processo de geocodificação. Tente mais tarde!', 500);
                 }
             }
             return (object)$geodata;
-        } catch (\Exception $e) {
-            error_log("Erro de geocodificação: " . $e->getMessage());
-            self::exibeErros(["error" => 'Falha no processo de geocodificação. Tente mais tarde!'], 500);
+        } catch (Throwable $th) {
+            error_log("Log error:" . $th->getMessage());
+            ExibeErros::erro('Falha no processo de geocodificação. Tente mais tarde!', 500);
         }
-    }
-
-    private static function exibeErros($erro, $codigoHttp): string
-    {
-        http_response_code($codigoHttp);
-        header('Content-Type: application/json; charset=utf-8');
-    
-        $resposta = [
-            'error' => $erro ? $erro['error'] : 'Erro desconhecido',
-            'code' => $codigoHttp
-        ];
-        exit(json_encode($resposta, JSON_UNESCAPED_UNICODE));
     }
 }

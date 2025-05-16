@@ -23,7 +23,7 @@ class RotaFacilController
 
         $matrixDistancia = new MatrixDistanciaService($coordenadasOD);
         $percurso = $this->formataPercurso($matrixDistancia->getPercurso());
-    
+
         exit(json_encode($percurso, JSON_UNESCAPED_UNICODE));
     }
 
@@ -50,7 +50,6 @@ class RotaFacilController
     private function formataEndCoordenadas(object $geocodificacao): object
     {
         $formataCoordenadas = function(object $localizacao): object {
-            // Verificação completa da estrutura antes de acessar
             if (!isset(
                 $localizacao->result,
                 $localizacao->result[0],
@@ -96,7 +95,7 @@ class RotaFacilController
         ];
     }
 
-    private function formataPercurso(array $percurso): object 
+    private function formataPercurso(array $percurs): object 
     {
         $elemento = $percurso['rows'][0]['elements'][0] ?? null;
     
