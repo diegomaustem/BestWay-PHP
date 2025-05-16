@@ -1,6 +1,7 @@
 <?php 
 namespace App\Routes;
 use App\Controllers\RotaFacilController;
+
 class Route 
 {
     public static function direcionaRota() 
