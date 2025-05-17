@@ -13,7 +13,7 @@ class RotaFacilController
         $this->getRotaFacil();
     }
 
-    public function getRotaFacil() 
+    public function getRotaFacil(): void 
     { 
         $enderecos = $this->formataEndOD($this->enderecosOD);
         $geocodificacao = new GeocodificacaoService($enderecos);

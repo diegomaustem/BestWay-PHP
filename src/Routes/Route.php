@@ -5,7 +5,7 @@ use App\Utils\ExibeErros;
 
 class Route 
 {
-    public static function direcionaRota() 
+    public static function direcionaRota(): void 
     {
         $metodo = $_SERVER['REQUEST_METHOD'];
         $uri    = $_SERVER['REQUEST_URI'] ?? '';
@@ -27,7 +27,7 @@ class Route
 
     private static function validaEnderecosEntrada(object $enderecosOD): bool | null
     {
-        if ($enderecosOD === null || !isset($enderecosOD->origem, $enderecosOD->destino)) {
+        if ($enderecosOD == null || !isset($enderecosOD->origem, $enderecosOD->destino)) {
             return null;
         }
 

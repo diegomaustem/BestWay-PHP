@@ -17,7 +17,7 @@ class GeocodificacaoService
         $this->enderecos = $enderecos;
     }
 
-    public function getLocalizacaoGeografica() 
+    public function getLocalizacaoGeografica()
     {
         $client = new Client();
 

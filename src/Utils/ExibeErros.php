@@ -3,7 +3,7 @@ namespace App\Utils;
 
 class ExibeErros
 {
-    public static function erro($erro, $code): string
+    public static function erro(string $erro, int $code): string
     {
         header('Content-Type: application/json; charset=utf-8');
         http_response_code($code);
