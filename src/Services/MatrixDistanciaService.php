@@ -1,7 +1,6 @@
 <?php 
 namespace App\Services;
 
-use App\Utils\ExibeErros;
 use GuzzleHttp\Client;
 use Throwable;
 
@@ -16,7 +15,7 @@ class MatrixDistanciaService
         $this->coordenadasOD = $coordenadasOD;
     }
 
-    public function getPercurso() 
+    public function getPercurso(): object | false
     {
         $client = new Client();
 
@@ -29,16 +28,12 @@ class MatrixDistanciaService
                 ]
             ])->then(
                 function ($response) {
-                    return json_decode($response->getBody(), true);
-                },
-                function ($exception) {
-                    ExibeErros::erro('Falha de requisição. Tente mais tarde!', 404);
-                }
-            );
+                    return json_decode($response->getBody());
+                });
             return $promise->wait(); 
         } catch (Throwable $th) {
             error_log("Log error:" . $th->getMessage());
-            ExibeErros::erro('Falha no processo de calcular distância. Tente mais tarde!', 500);
+            return false;
         }
     }
 

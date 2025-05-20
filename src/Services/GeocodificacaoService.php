@@ -17,7 +17,7 @@ class GeocodificacaoService
         $this->enderecos = $enderecos;
     }
 
-    public function getLocalizacaoGeografica()
+    public function getLocalizacaoGeografica(): object | false
     {
         $client = new Client();
 
@@ -40,7 +40,6 @@ class GeocodificacaoService
 
         try {
             $results = Promise\Utils::settle($promises)->wait();
-
             foreach ($results as $tipo => $result) {
                 if ($result['state'] === 'fulfilled') {
                     $geodata[$tipo] = json_decode($result['value']->getBody());
@@ -51,7 +50,7 @@ class GeocodificacaoService
             return (object)$geodata;
         } catch (Throwable $th) {
             error_log("Log error:" . $th->getMessage());
-            ExibeErros::erro('Falha no processo de geocodificação. Tente mais tarde!', 500);
+            return false;
         }
     }
 }

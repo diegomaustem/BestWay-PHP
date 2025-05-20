@@ -2,6 +2,7 @@
 namespace App\Controllers;
 use App\Services\GeocodificacaoService;
 use App\Services\MatrixDistanciaService;
+use App\Utils\ExibeErros;
 
 class RotaFacilController 
 {
@@ -16,14 +17,24 @@ class RotaFacilController
     public function getRotaFacil(): void 
     { 
         $enderecos = $this->formataEndOD($this->enderecosOD);
-        $geocodificacao = new GeocodificacaoService($enderecos);
+        $geoService = new GeocodificacaoService($enderecos); 
+        $geocodificacao = $geoService->getLocalizacaoGeografica();
 
-        $enderecoCordenadas = $this->formataEndCoordenadas($geocodificacao->getLocalizacaoGeografica());
+        if(!is_object($geocodificacao)) {
+            ExibeErros::erro('Falha no processo de geocodificação. Tente mais tarde!', 500);
+        }
+
+        $enderecoCordenadas = $this->formataEndCoordenadas($geocodificacao);
         $coordenadasOD = $this->formataCoordOD($enderecoCordenadas);
 
-        $matrixDistancia = new MatrixDistanciaService($coordenadasOD);
-        $percurso = $this->formataPercurso($matrixDistancia->getPercurso());
+        $matrixService = new MatrixDistanciaService($coordenadasOD);
+        $matrixDistancia = $matrixService->getPercurso();
 
+        if(!is_object($matrixDistancia)) {
+            ExibeErros::erro('Falha no processo de calcular distância. Tente mais tarde!', 500);
+        }
+
+        $percurso = $this->formataPercurso($matrixDistancia);
         exit(json_encode($percurso, JSON_UNESCAPED_UNICODE));
     }
 
@@ -95,20 +106,20 @@ class RotaFacilController
         ];
     }
 
-    private function formataPercurso(array $percurso): object 
-    {
-        $elemento = $percurso['rows'][0]['elements'][0] ?? null;
-    
+    private function formataPercurso(object $percurso): object 
+    { 
+        $elemento = $percurso->rows[0]->elements[0] ?? null;
+
         return (object)[
-            'origem' => $percurso['origin_addresses'][0] ?? null,
-            'destino' => $percurso['destination_addresses'][0] ?? null,
-            'distancia' => (object)['km' => $elemento['distance']['text'] ?? null],
-            'duração' => (object)['tempo' => $elemento['duration']['text'] ?? null],
+            'origem' => $percurso->origin_addresses[0] ?? null,
+            'destino' => $percurso->destination_addresses[0] ?? null,
+            'distancia' => (object)['km' => $elemento->distance->text ?? null],
+            'duracao' => (object)['tempo' => $elemento->duration->text ?? null],
             'erro' => (!isset(
-                $percurso['origin_addresses'][0],
-                $percurso['destination_addresses'][0],
-                $elemento['distance']['text'],
-                $elemento['duration']['text']
+                $percurso->origin_addresses[0],
+                $percurso->destination_addresses[0],
+                $elemento->distance->text,
+                $elemento->duration->text
             )) ? 'Estrutura inválida' : null
         ];
     }

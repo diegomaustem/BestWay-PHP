@@ -15,8 +15,14 @@ class Route
         if($metodo != 'POST' || $rota !== 'rotaFacil') {
             ExibeErros::erro("Método ou rota não identificado.", 404);
         }
+        
+        $dadosEntrada = file_get_contents('php://input');
 
-        $enderecosOD = json_decode(file_get_contents('php://input'));
+        if(!is_string($dadosEntrada)) {
+            ExibeErros::erro('Dados de entrada inválidos', 400);
+        }
+
+        $enderecosOD = json_decode($dadosEntrada);       
         $enderecosODValidos = self::validaEnderecosEntrada($enderecosOD);
 
         if($enderecosODValidos !== true) {
